@@ -1,6 +1,5 @@
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import M from "materialize-css";
-
 export const useMaterialize = () => {
   const actvieMaterialize = () => {
     onMounted(() => M.AutoInit());
@@ -9,3 +8,13 @@ export const useMaterialize = () => {
     actvieMaterialize,
   };
 };
+export const useShowForm = () => {
+  const openForm = ref(false)
+  const showForm = () => {
+    openForm.value = !openForm.value
+  }
+  return {
+    showForm,
+    openForm
+  }
+}

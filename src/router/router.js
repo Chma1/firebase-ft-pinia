@@ -3,24 +3,28 @@ import Login from '../Views/Login.vue'
 import Register from '../Views/RegisterView.vue'
 import Home from '../Views/Home.vue'
 import ErrorViews from '../Views/ErrorViews.vue'
-import { useUserStore } from "../store/pinia.js"
+import EditComponents from'../components/EditDocuments.vue'
+import { useUserStore } from "../store/userStore.js"
 
 // se coloca antes (ruta protegida)
-const requireAuth = async (to,from,next) => {
+const requireAuth = async (to, from, next) => {
   const userStore = useUserStore();
-  userStore.loadinfUser=true
+  userStore.loadingUser = true
   const user = await userStore.currentsUser()
   if (user) {
     next();
   } else {
     next("/login");
   }
-  userStore.loadinfUser=false
+  setTimeout(() => {
+    userStore.loadingUser = false
+  }, 500);
 
 }
 
 const routes = [
   { path: "/", name: "home", component: Home, beforeEnter: requireAuth },
+  { path: "/edit/:id", name: "edit", component: EditComponents, beforeEnter: requireAuth },
   { path: "/login", name: "login", component: Login },
   { path: "/register", name: "register", component: Register },
   { path: "/:AllCatch(.*)", name: "error", component: ErrorViews },

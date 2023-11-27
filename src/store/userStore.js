@@ -1,28 +1,26 @@
 import { defineStore } from "pinia";
 import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "../hooks/firebase";
-import { useRouter } from "vue-router";
-
+import router from '../router/router.js'
+import { dataBaseStore } from "./colletionDataBase.js";
 
 export const useUserStore = defineStore("User", {
   state: () => ({
     userData: null,
     loadingData: false,
-    loadinfUser: false,
+    loadingUser: false,
     // toast: `<span>email o usuario invalido</span><button class="btn-flat toast-action "><i class="material-icons left">error</i></button>`,
-    router: useRouter()
   }),
   actions: {
     // Registar al usuario
     async registerUser(email, password) {
-      this.loadingData = true
+      this.loadingUser = true
       try {
         const { user } = await createUserWithEmailAndPassword(auth, email, password);
-        this.router.push('/')
+        router.push('/')
         this.userData = {
           email: user.email,
           uid: user.uid,
-          displayName: user.displayName
         };
       } catch (error) {
         console.log(error.code)
@@ -51,22 +49,21 @@ export const useUserStore = defineStore("User", {
           });
         }
       } finally {
-        this.loadingData = false
+        setTimeout(() => this.loadingUser = false, 500)
       }
     },
 
     // iniciar sesion
     async signUser(email, password) {
-      this.loadingData = true
+      this.loadingUser = true
       try {
         const { user } = await signInWithEmailAndPassword(auth, email, password)
-        this.router.push('/')
+        router.push('/')
         this.userData = {
           email: user.email,
           uid: user.uid,
-          displayName: user.displayName
         };
-        console.log(user)
+        // console.log(user)
       } catch (error) {
         console.log(error.code)
         if (error.code === "auth/invalid-email" || error.code === 'auth/invalid-login-credentials') {
@@ -80,14 +77,15 @@ export const useUserStore = defineStore("User", {
           });
         }
       } finally {
-        this.loadingData = false
+        setTimeout(() => this.loadingUser = false, 500)
+
       }
     },
     // Cerrar sesion
     async closeAccount() {
-      this.loadinfUser = true
+      const dataBase = dataBaseStore()
+      this.loadingData = true
       try {
-        await signOut(auth)
         M.toast({
           html: 'Hasta pronto',
           classes: "rounded",
@@ -95,17 +93,20 @@ export const useUserStore = defineStore("User", {
           displayLength: 1000,
           inDuration: 500,
         })
+        await signOut(auth)
+        console.log(signOut(auth));
       } catch (error) {
         console.log(error.code)
       } finally {
+        dataBase.$reset()
         this.userData = {}
-        this.loadinfUser = false
-        this.router.push('/login')
+        setTimeout(() => this.loadingData = false, 500)
+        router.push('/login')
       }
     },
 
     // Observable
- currentsUser() {
+    currentsUser() {
       let unsubscribe;
       return new Promise((resolve, reject) => {
         unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -122,7 +123,6 @@ export const useUserStore = defineStore("User", {
       });
     },
   },
-
   getters: {},
 }
 );

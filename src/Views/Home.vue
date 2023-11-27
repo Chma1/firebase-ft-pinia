@@ -1,16 +1,22 @@
-   
+
 <script setup>
-import { useMaterialize } from '../hooks/composable.js'
-import { useUserStore } from '../store/pinia';
+import LoadingComponent from '../components/LoadingComponent.vue'
+import CreateDocuments from '../components/CreateDocuments.vue';
+import ShowDocuments from '../components/showDocuments.vue'
+import { useMaterialize, useShowForm } from '../hooks/composable.js'
 const { actvieMaterialize } = useMaterialize()
 actvieMaterialize()
-
+import { useUserStore } from '../store/userStore';
+import { dataBaseStore } from '../store/colletionDataBase';
+const useData=dataBaseStore()
 const useUser = useUserStore()
+const { showForm, openForm } = useShowForm()
 
 </script>
 
 <template>
-  <div class="container">
+  <LoadingComponent v-if="useUser.loadingUser" />
+  <div class="container" v-else>
     <div class="card-panel">
       <div class="row">
         <div class="card-image col s4 l2">
@@ -19,6 +25,7 @@ const useUser = useUserStore()
         <div class="col s8 l10">
           <span class="grey-text col s12 right">ID:{{ useUser.userData.uid }}</span>
           <span class="blue-text col s12 ">email:{{ useUser.userData.email }}</span>
+
         </div>
       </div>
       <div class="divider"></div>
@@ -27,8 +34,21 @@ const useUser = useUserStore()
         mollitia modi quas autem esse itaque rem aperiam officiis nostrum dicta ad enim nam quos.
       </span>
     </div>
-
+<!-- mostrar documents -->
+    <ShowDocuments />
+    <button class="waves-effect white btn-small btn-active " 
+    :class="{ 'black-text': !openForm, 'red-text': openForm }"
+      @click="showForm" ><span>
+        <i class="material-icons right">description</i>
+        {{ !openForm ? 'abrir formulario' : 'cerrar formulario' }}</span></button>
+        <!-- crear documento -->
+    <CreateDocuments v-if="openForm" />
   </div>
 </template>
 
-<style  scoped></style>
+<style scoped>
+.btn-active {
+  margin-bottom: 10px;
+}
+
+</style>

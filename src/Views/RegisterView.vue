@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import { useUserStore } from "../store/pinia";
+import { useUserStore } from "../store/userStore";
 import LoadingComponent from "../components/LoadingComponent.vue";
 // import M from "materialize-css";
 
