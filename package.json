@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "firebase": "^10.5.2",
+    "firebase": "^10.7.0",
     "materialize-css": "^1.0.0-rc.2",
     "nanoid": "^5.0.3",
     "pinia": "^2.1.7",
